@@ -12,15 +12,15 @@ import (
 )
 
 type Movie struct {
-	id       string    `json:"id"`
-	isbn     string    `json:"isbn"`
-	title    string    `json:"title"`
-	director *Director `json:"directory"`
+	Id       string    `json:"id"`
+	Isbn     string    `json:"isbn"`
+	Title    string    `json:"title"`
+	Director *Director `json:"directory"`
 }
 
 type Director struct {
-	firstName string `json:"firstname"`
-	lastName  string `json:"lastname"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
 }
 
 var movies []Movie
@@ -34,7 +34,7 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	for i, movie := range movies {
-		if movie.id == params["id"] {
+		if movie.Id == params["id"] {
 			movies = append(movies[:i], movies[i+1:]...)
 			break
 		}
@@ -46,7 +46,7 @@ func getMovie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	for _, movie := range movies {
-		if movie.id == params["id"] {
+		if movie.Id == params["id"] {
 			json.NewEncoder(w).Encode(movie)
 			return
 		}
@@ -57,7 +57,7 @@ func createMovie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var movie Movie
 	_ = json.NewDecoder(r.Body).Decode(&movie)
-	movie.id = strconv.Itoa(rand.Intn(1000000000))
+	movie.Id = strconv.Itoa(rand.Intn(1000000000))
 	movies = append(movies, movie)
 	json.NewEncoder(w).Encode(movie)
 }
@@ -67,11 +67,11 @@ func updateMovie(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	for i, movie := range movies {
-		if movie.id == params["id"] {
+		if movie.Id == params["id"] {
 			movies = append(movies[:i], movies[i+1:]...)
 			var movie Movie
 			_ = json.NewDecoder(r.Body).Decode(&movie)
-			movie.id = params["id"]
+			movie.Id = params["id"]
 			movies = append(movies, movie)
 			json.NewEncoder(w).Encode(movie)
 			return
@@ -82,8 +82,8 @@ func updateMovie(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := mux.NewRouter()
 
-	movies = append(movies, Movie{id: "1", isbn: "42345612", title: "Gone with the Wind", director: &Director{firstName: "Victor", lastName: "Fleming"}})
-	movies = append(movies, Movie{id: "2", isbn: "8675309", title: "The Godfather", director: &Director{firstName: "Francis", lastName: "Coppola"}})
+	movies = append(movies, Movie{Id: "1", Isbn: "42345612", Title: "Gone with the Wind", Director: &Director{FirstName: "Victor", LastName: "Fleming"}})
+	movies = append(movies, Movie{Id: "2", Isbn: "8675309", Title: "The Godfather", Director: &Director{FirstName: "Francis", LastName: "Coppola"}})
 	r.HandleFunc("/movies", getMovies).Methods("GET")
 	r.HandleFunc("/movies/{id}", getMovie).Methods("GET")
 	r.HandleFunc("/movies", createMovie).Methods("POST")
